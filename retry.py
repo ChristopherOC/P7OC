@@ -27,25 +27,16 @@ def load_actions(dataset_path: str):
 def main():
     dataset = load_actions(dataset_path="bourse.csv")
     max_weight = 500
-    total_spent = 0
-    full_list=[]
-    final = []
-    # print(sum(item.weight for item in dataset))
+    liste = []
+    print(sum(item.weight for item in dataset))
     # print(dataset)
-    for i in range(len(dataset)+1):
-        combination = itertools.combinations(dataset, i)
-        full_list += list(combination)
+    for items in dataset:
+        items = itertools.combinations([[item.name, item.weight] for item in dataset], 2)
 
 
-    for combination in full_list:
-        for item in combination:
-            total_spent += item.weight
-            
-            if total_spent <= 500:
-                final.append(item)
-  
-    print(final)
-    print(total_spent)
+    
+    y = [i for i in items]
+    print(y)
     print(f"Exécuté en : {time.time() - timer} secondes")
 
 if __name__ == "__main__":
