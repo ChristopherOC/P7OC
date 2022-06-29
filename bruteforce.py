@@ -22,7 +22,8 @@ class Portfolio:
     def __init__(self, max_weight: float, actions: Sequence[Action]):
         self.max_weight = max_weight
         self.actions = actions
-
+        print(actions)
+        print(max_weight)
     
     def get_benefits(self) -> float:
         return sum(item.benefits for item in self.actions)
@@ -67,7 +68,9 @@ def main():
     max_weight = 500
     # portfolio(max_weight)
     print(f"Exécuté en : {time.time() - timer} secondes")
-    print(Portfolio(max_weight, load_actions("bourse.csv")))
+    Portfolio(max_weight, load_actions("bourse.csv"))
+    
+    
     
 
 if __name__ == "__main__":
