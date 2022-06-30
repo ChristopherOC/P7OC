@@ -60,7 +60,7 @@ def portfolio(max_weight):
             best_portfolio = portfolio
             best_profit = profit
             best_weight = weight
-
+            
     print(f"Le profit est de {best_profit}€ pour un investissement de {best_weight}€, avec les actions suivantes {best_portfolio}")
     
 

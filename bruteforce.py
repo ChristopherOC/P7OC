@@ -16,20 +16,26 @@ class Action:
     @property
     def benefits(self) -> float:
         return self.profit * self.weight / 100
-
+    
 
 class Portfolio:
     def __init__(self, max_weight: float, actions: Sequence[Action]):
         self.max_weight = max_weight
         self.actions = actions
-        print(actions)
-        print(max_weight)
+        self.benefits = None
+        if self.get_weight() > max_weight:
+            raise Exception("Le cout des actions dépasse le cout maximum d'investissement pour ce portfolio")    
+            
     
     def get_benefits(self) -> float:
-        return sum(item.benefits for item in self.actions)
+        if self.benefits is None :
+            self.benefits = sum(item.benefits for item in self.actions)
+        return self.benefits
+         
 
     def get_weight(self) -> float:
         return sum(item.weight for item in self.actions)
+    
 
 def convert_data(d: dict) -> dict:
     d["weight"] = float(d["weight"])
@@ -45,33 +51,33 @@ def get_combination(dataset):
         for combination in itertools.combinations(dataset, repetition):
             yield combination
         
-# def portfolio(max_weight):
-#     dataset = load_actions(dataset_path="bourse.csv")
-#     max_weight = 500
-#     best_profit = 0
-#     best_portfolio = None
-#     best_weight = 0
-#     for portfolio in get_combination(dataset):
-#         weight = sum(item.weight for item in portfolio)
-#         if weight > max_weight:
-#             continue
-#         profit = sum(item.profit for item in portfolio)
-#         if best_portfolio is None or (best_portfolio and best_profit < profit):
-#             best_portfolio = portfolio
-#             best_profit = profit
-#             best_weight = weight
-
-    print(f"Le profit est de {best_profit}€ pour un investissement de {best_weight}€")
     
 
 def main():
     max_weight = 500
-    # portfolio(max_weight)
     print(f"Exécuté en : {time.time() - timer} secondes")
-    Portfolio(max_weight, load_actions("bourse.csv"))
-    
-    
-    
+    # print(Portfolio(max_weight, load_actions("bourse.csv")))
+    # print(f"Le profit est de {} pour un prix de {} avec les actions suivantes {}")
+  
+    dataset = load_actions(dataset_path="bourse.csv")
+    max_weight = 500
+    best_portfolio = None
+    for action_list in get_combination(dataset):
+        try:
+            portfolio = Portfolio(max_weight=max_weight, actions=action_list)
+        except:
+            continue
+
+        weight = sum(item.weight for item in portfolio)
+        if weight > max_weight:
+            continue
+        profit = sum(item.profit for item in portfolio)
+        if best_portfolio is None or (best_portfolio and best_profit < profit):
+            best_portfolio = portfolio
+            best_profit = profit
+            best_weight = weight
+
+
 
 if __name__ == "__main__":
     main()
