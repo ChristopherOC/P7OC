@@ -20,21 +20,30 @@ class Action:
 
 class Portfolio:
     def __init__(self, max_weight: float, actions: Sequence[Action]):
-        self.max_weight = max_weight
-        self.actions = actions
-        self.benefits = None
-        if self.get_weight() > max_weight:
-            raise Exception("Le cout des actions dépasse le cout maximum d'investissement pour ce portfolio")    
-            
+        self.__max_weight = max_weight
+        self.__actions = actions
+        self.__benefits = None
+        if self.weight > max_weight:
+            raise Exception("Le cout des actions dépasse le cout maximum d'investissement pour ce portfolio")
     
-    def get_benefits(self) -> float:
-        if self.benefits is None :
-            self.benefits = sum(item.benefits for item in self.actions)
-        return self.benefits
-         
+    @property
+    def action_names(self):
+        return "|".join(action.name for action in self.__actions)
+     
+    def __gt__(self, other):
+        if other is None:
+            return True
+        return self.benefits > other.benefits
+    
+    @property
+    def benefits(self) -> float:
+        if self.__benefits is None :
+            self.__benefits = sum(item.benefits for item in self.__actions)
+        return self.__benefits   
 
-    def get_weight(self) -> float:
-        return sum(item.weight for item in self.actions)
+    @property
+    def weight(self) -> float:
+        return sum(item.weight for item in self.__actions)
     
 
 def convert_data(d: dict) -> dict:
@@ -47,18 +56,11 @@ def load_actions(dataset_path: str):
         return [Action(**convert_data(d)) for d in csv.DictReader(f)]
 
 def get_combination(dataset):
-    for repetition in range(1, len(dataset) + 1): #
+    for repetition in range(1, len(dataset) + 1): 
         for combination in itertools.combinations(dataset, repetition):
             yield combination
-        
-    
 
 def main():
-    max_weight = 500
-    print(f"Exécuté en : {time.time() - timer} secondes")
-    # print(Portfolio(max_weight, load_actions("bourse.csv")))
-    # print(f"Le profit est de {} pour un prix de {} avec les actions suivantes {}")
-  
     dataset = load_actions(dataset_path="bourse.csv")
     max_weight = 500
     best_portfolio = None
@@ -67,17 +69,11 @@ def main():
             portfolio = Portfolio(max_weight=max_weight, actions=action_list)
         except:
             continue
-
-        weight = sum(item.weight for item in portfolio)
-        if weight > max_weight:
-            continue
-        profit = sum(item.profit for item in portfolio)
-        if best_portfolio is None or (best_portfolio and best_profit < profit):
-            best_portfolio = portfolio
-            best_profit = profit
-            best_weight = weight
-
-
+        
+        best_portfolio = max(best_portfolio, portfolio)
+        
+    print(f"Le cout est de {best_portfolio.weight}€ pour un bénéfice de {best_portfolio.benefits}€, {best_portfolio.action_names}")
+    print(f"Exécuté en : {time.time() - timer} secondes")
 
 if __name__ == "__main__":
     main()
