@@ -1,6 +1,8 @@
+from ast import Raise
 import csv
 from dataclasses import dataclass
 import itertools
+from logging import exception
 import time
 from typing import Sequence
 
@@ -45,6 +47,12 @@ class Portfolio:
     def weight(self) -> float:
         return sum(item.weight for item in self.__actions)
     
+    def add(self, action: Action):
+        if self.weight + action.weight > self.__max_weight:
+           raise Exception("Le cout des actions dépasse le cout maximum d'investissement pour ce portfolio")
+        self.__actions.append(action)
+        self.__benefits = None
+                
 
 def convert_data(d: dict) -> dict:
     d["weight"] = float(d["weight"])

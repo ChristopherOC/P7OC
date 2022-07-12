@@ -1,6 +1,5 @@
 import csv
 from dataclasses import dataclass
-from importlib.resources import path
 import itertools
 import time
 
@@ -27,16 +26,15 @@ def load_actions(dataset_path: str):
 def main():
     dataset = load_actions(dataset_path="bourse.csv")
     max_weight = 500
-    liste = []
+    wallet = 0
     print(sum(item.weight for item in dataset))
-    # print(dataset)
-    for items in dataset:
-        items = itertools.combinations([[item.name, item.weight] for item in dataset], 2)
+    print(item.weight for item in dataset)
+    # while wallet <= max_weight:
+    #     wallet += (item.weight for item in dataset)
+    # print(wallet)
 
 
     
-    y = [i for i in items]
-    print(y)
     print(f"Exécuté en : {time.time() - timer} secondes")
 
 if __name__ == "__main__":
