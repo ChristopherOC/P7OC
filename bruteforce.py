@@ -1,13 +1,13 @@
-from ast import Raise
 import csv
 from dataclasses import dataclass
 import itertools
-from logging import exception
 import time
+import tracemalloc
 from typing import Sequence
 
 
 timer = time.time()
+tracemalloc.start()
 
 @dataclass
 class Action:
@@ -20,13 +20,16 @@ class Action:
         return self.profit * self.weight / 100
     
 
-class Portfolio:
-    def __init__(self, max_weight: float, actions: Sequence[Action]):
+class Wallet:
+    def __init__(self, max_weight: float, actions: Sequence[Action] = None):
         self.__max_weight = max_weight
-        self.__actions = actions
+        self.__actions = actions if actions is not None else []
         self.__benefits = None
         if self.weight > max_weight:
             raise Exception("Le cout des actions dépasse le cout maximum d'investissement pour ce portfolio")
+    
+    def __iter__(self):
+        return self
     
     @property
     def action_names(self):
@@ -53,28 +56,31 @@ class Portfolio:
         self.__actions.append(action)
         self.__benefits = None
                 
+    def __str__(self):
+        return f"{self.action_names}, {self.weight}€, {self.benefits}€"
 
-def convert_data(d: dict) -> dict:
-    d["weight"] = float(d["weight"])
-    d["profit"] = float(d["profit"])
-    return d
+    def load_actions(dataset_path: str):
+        with open(dataset_path) as f:
+            return [Action(**ManageData.convert_data(d)) for d in csv.DictReader(f)]
 
-def load_actions(dataset_path: str):
-    with open(dataset_path) as f:
-        return [Action(**convert_data(d)) for d in csv.DictReader(f)]
+    def get_combination(dataset):
+        for repetition in range(1, len(dataset) + 1): 
+            for combination in itertools.combinations(dataset, repetition):
+                yield combination
 
-def get_combination(dataset):
-    for repetition in range(1, len(dataset) + 1): 
-        for combination in itertools.combinations(dataset, repetition):
-            yield combination
+class ManageData:
+    def convert_data(d: dict) -> dict:
+        d["weight"] = float(d["weight"])
+        d["profit"] = float(d["profit"])
+        return d
 
 def main():
-    dataset = load_actions(dataset_path="bourse.csv")
+    dataset = Wallet.load_actions(dataset_path="bourse.csv")
     max_weight = 500
     best_portfolio = None
-    for action_list in get_combination(dataset):
+    for action_list in Wallet.get_combination(dataset):
         try:
-            portfolio = Portfolio(max_weight=max_weight, actions=action_list)
+            portfolio = Wallet(max_weight=max_weight, actions=action_list)
         except:
             continue
         
@@ -85,4 +91,14 @@ def main():
 
 if __name__ == "__main__":
     main()
+    bytes_usage = tracemalloc.get_tracemalloc_memory()
+    print(bytes_usage, "bytes utilisés pour l'exécution du programme.")
+    tracemalloc.stop()
 
+
+#Utiliser des classes pour les fonctions seules + aménagement / PDF en cours / complexité spatiale pas maitrisée
+
+#Consommation de ram / amélioration du script de bf
+
+
+#Faire un algorithm de bruteforce récursif
