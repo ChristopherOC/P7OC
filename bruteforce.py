@@ -5,10 +5,12 @@ import time
 import tracemalloc
 from typing import Sequence
 
-
+#Lance le chronomètre et vérifie la mémoire utilisée
 timer = time.time()
 tracemalloc.start()
 
+
+#Créé une classe action par défaut
 @dataclass
 class Action:
     name: str
@@ -20,6 +22,7 @@ class Action:
         return self.profit * self.weight / 100
     
 
+#Classe portefeuille
 class Wallet:
     def __init__(self, max_weight: float, actions: Sequence[Action] = None):
         self.__max_weight = max_weight
@@ -34,12 +37,12 @@ class Wallet:
     @property
     def action_names(self):
         return "|".join(action.name for action in self.__actions)
-     
+
     def __gt__(self, other):
         if other is None:
             return True
         return self.benefits > other.benefits
-    
+
     @property
     def benefits(self) -> float:
         if self.__benefits is None :
@@ -49,13 +52,13 @@ class Wallet:
     @property
     def weight(self) -> float:
         return sum(item.weight for item in self.__actions)
-    
+
     def add(self, action: Action):
         if self.weight + action.weight > self.__max_weight:
            raise Exception("Le cout des actions dépasse le cout maximum d'investissement pour ce portfolio")
         self.__actions.append(action)
         self.__benefits = None
-                
+
     def __str__(self):
         return f"{self.action_names}, {self.weight}€, {self.benefits}€"
 
@@ -64,10 +67,11 @@ class Wallet:
             return [Action(**ManageData.convert_data(d)) for d in csv.DictReader(f)]
 
     def get_combination(dataset):
-        for repetition in range(1, len(dataset) + 1): 
+        for repetition in range(1, len(dataset) + 1):
             for combination in itertools.combinations(dataset, repetition):
                 yield combination
 
+#Classe pour convertir les données en valeur décimales
 class ManageData:
     def convert_data(d: dict) -> dict:
         d["weight"] = float(d["weight"])
@@ -83,7 +87,6 @@ def main():
             portfolio = Wallet(max_weight=max_weight, actions=action_list)
         except:
             continue
-        
         best_portfolio = max(best_portfolio, portfolio)
         
     print(f"Le cout est de {best_portfolio.weight}€ pour un bénéfice de {best_portfolio.benefits}€, {best_portfolio.action_names}")
@@ -94,11 +97,3 @@ if __name__ == "__main__":
     bytes_usage = tracemalloc.get_tracemalloc_memory()
     print(bytes_usage, "bytes utilisés pour l'exécution du programme.")
     tracemalloc.stop()
-
-
-#Utiliser des classes pour les fonctions seules + aménagement / PDF en cours / complexité spatiale pas maitrisée
-
-#Consommation de ram / amélioration du script de bf
-
-
-#Faire un algorithm de bruteforce récursif

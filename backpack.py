@@ -3,16 +3,15 @@ from bruteforce import  Wallet
 import tracemalloc
 
 
-
 timer = time.time()
 tracemalloc.start()
 
+#Création d'un "Sac-à-dos" pour tester les combinaisons
 def backpack(dataset, max_weight):
-    portfolio = Wallet(max_weight = max_weight)
-  
-    dataset = Wallet.load_actions(dataset_path="dataset1_Python+p7.csv")
-    dataset.sort(key= lambda x: -x.profit)
-    for action in dataset:
+    portfolio = Wallet(max_weight = max_weight) #Instanciation d'un portefeuille d'action
+    dataset = Wallet.load_actions(dataset_path="dataset2_Python+P7.csv")
+    dataset.sort(key= lambda x: -x.profit) #Trie les action par bénéfice de façon décroissante
+    for action in dataset: #Boucle qui ajoute une action au portefeuille tant que le cout de 500€ n'est pas dépassé
         try:
             portfolio.add(action)
         except:
@@ -22,7 +21,7 @@ def backpack(dataset, max_weight):
 
 def main():
     max_weight = 500
-    dataset = Wallet.load_actions(dataset_path="dataset1_Python+p7.csv")
+    dataset = Wallet.load_actions(dataset_path="dataset2_Python+P7.csv")
     list_action = dataset.sort(key= lambda x: -x.profit)
     backpack(dataset = list_action, max_weight= max_weight)
     print(f"Exécuté en : {time.time() - timer} secondes")
@@ -33,6 +32,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-#librairie mémoire -> Tracemalloc
