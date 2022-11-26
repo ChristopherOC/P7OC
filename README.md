@@ -6,6 +6,7 @@ Lancez ensuite la console, placez vous dans le dossier de votre choix puis clone
 
 Placez-vous dans le dossier créé, créez puis activez l'environnement virtuel :
 > python -m venv env
+
 Windows :
 > env\scripts\activate.bat
 Linux :
